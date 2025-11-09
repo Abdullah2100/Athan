@@ -1,5 +1,6 @@
 package com.example.athan
 
+import android.content.BroadcastReceiver
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.athan.ui.theme.AthanTheme
 
 class MainActivity : ComponentActivity() {
+    private lateinit var mTimPicker: BroadcastReceiver;
+
+    override fun onResume() {
+        super.onResume()
+
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

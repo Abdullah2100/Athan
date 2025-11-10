@@ -8,8 +8,11 @@ import com.example.athan.data.local.entity.Time
 
 interface TimeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTime(time: Time)
+    suspend fun insert(time: Time)
 
-    @Query("SELECT * FROM date")
+    @Query("SELECT * FROM AthanTime")
     suspend fun getTimes(date: String): List<Date>?
+
+    @Query("SELECT * FROM AthanTime where dateId=:dateId")
+    suspend fun getTimesByDateId(dateId:Int): List<Time>?
 }

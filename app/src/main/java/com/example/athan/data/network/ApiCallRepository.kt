@@ -1,6 +1,6 @@
 package com.example.athan.data.network
 
-import com.example.athan.data.network.dto.AthanDto
+import com.example.athan.data.network.dto.AthanDaysDto
 import com.example.athan.util.General
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -28,7 +28,7 @@ class ApiCallRepository @Inject constructor(val ktorClient: HttpClient) {
             val result = ktorClient.get(baseUrl)
 
             if (result.status == HttpStatusCode.OK) {
-                return NetworkCallHandler.Successful(result.body<AthanDto>())
+                return NetworkCallHandler.Successful(result.body<AthanDaysDto>())
             } else {
                 NetworkCallHandler.Error(result.body<String>())
             }

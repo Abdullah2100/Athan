@@ -66,6 +66,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //material icon
+    implementation(libs.androidx.material.icons.extended)
+
 
     //galance
     implementation(libs.androidx.glance.appwidget)

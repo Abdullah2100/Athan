@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import com.example.athan.data.local.AthanDataBase
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,6 +25,7 @@ import kotlinx.serialization.json.Json
 import org.junit.runner.manipulation.Ordering
 
 
+@Module
 @InstallIn(SingletonComponent::class)
 class Model {
 

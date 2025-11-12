@@ -17,4 +17,8 @@ interface TimeDao {
 
     @Query("SELECT * FROM AthanTime where dateId=:dateId")
     suspend fun getTimesByDateId(dateId:Int): List<Time>?
+
+
+    @Query("SELECT * FROM AthanTime where date=:date")
+    suspend fun getTimesByDate(date: String): List<Time>?
 }

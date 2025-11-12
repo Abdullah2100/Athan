@@ -15,12 +15,28 @@ object General {
 
 
     private fun getCurrentTimeZone():String{
-        return TimeZone.getDefault().displayName;
+        val timeZone = TimeZone.getDefault()
+        val zoneOffset= timeZone.getOffset(Calendar.getInstance().timeInMillis)
+        val offsetHours = zoneOffset / (60 * 60 * 1000)
+        return if(offsetHours>0)"+$offsetHours" else offsetHours.toString()
     }
 
     fun getCurrentDate(nextDay: Int? = null): String {
         val c = Calendar.getInstance()
         if (nextDay != null) c.add(Calendar.DATE, nextDay)
-        return "${c.get(Calendar.YEAR)}-${c.get(Calendar.MONTH)}-${c.get(Calendar.DAY_OF_MONTH)}"
+        return "${c.get(Calendar.YEAR)}-${c.get(Calendar.MONTH)+1}-${c.get(Calendar.DAY_OF_MONTH)}"
     }
+
+
+
+  fun   List<Int>.toValidDayHour():String
+  {
+      val hour = this[0]
+      val Minute = this[1]
+      val isMorning = if(hour<12)true else false
+      val newHour = if(!isMorning)hour-12 else hour
+      return "$newHour:$Minute ${if(isMorning)"ص" else "م"}"
+  }
+
+
 }

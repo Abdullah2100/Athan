@@ -13,7 +13,7 @@ interface DateDao {
     suspend fun insertDate(date: Date)
 
     @Query("SELECT * FROM AthanDate")
-    suspend fun getDates(): List<Date>?
+    suspend fun getDates(): List<Date>
 
     @Query("SELECT * FROM AthanDate WHERE date = :selectedDate")
     suspend fun getDateByCurrentDay(selectedDate: String): Date?

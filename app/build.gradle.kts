@@ -69,6 +69,8 @@ dependencies {
     //material icon
     implementation(libs.androidx.material.icons.extended)
 
+    //location
+    implementation(libs.play.services.location)
 
     //galance
     implementation(libs.androidx.glance.appwidget)

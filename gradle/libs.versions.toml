@@ -19,6 +19,8 @@ nav_version = "2.9.6"
 serialize-kotlin = '2.2.21'
 room = "2.8.3"
 materialIconsExtended = "1.7.8"
+playServicesLocation = "21.3.0"
+
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
@@ -61,6 +63,10 @@ ktor-cio = {group="io.ktor",name="ktor-client-cio",version.ref = "ktor"}
 
 #serialization
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx",name="kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
+
+#location
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 
 
 #room

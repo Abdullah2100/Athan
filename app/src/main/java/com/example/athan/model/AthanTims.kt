@@ -4,6 +4,8 @@ import androidx.room.PrimaryKey
 
 data class AthanTime(
      val id: Int? = null,
-    val time:String,
+     val name:String,
+     val hour:Int,
+     val minute:Int,
     val isMainPray:Boolean,
 )

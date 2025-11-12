@@ -17,8 +17,10 @@ import androidx.room.PrimaryKey
 )
 data class Time(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
-    val time:String,
+    val hour:Int,
+    val minute:Int,
     val name:String,
     val isMainPray:Boolean,
     val dateId:Int,
+    val date:String,
 )

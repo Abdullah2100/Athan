@@ -55,16 +55,15 @@ import com.example.e_commercompose.model.ButtonNavItem
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
- private  val athanViewMoldel: AthanViewModel by viewModels()
+    private val athanViewMoldel: AthanViewModel by viewModels()
 
 
     override fun onStart() {
         val timerBoardCast = TimeBroadcasts();
         val intentFLag = IntentFilter(Intent.ACTION_TIME_TICK)
-        registerReceiver(timerBoardCast,intentFLag)
+        registerReceiver(timerBoardCast, intentFLag)
         super.onStart()
     }
 
@@ -74,17 +73,17 @@ class MainActivity : ComponentActivity() {
         setContent {
 
 
-
             val locationClient = LocationServices.getFusedLocationProviderClient(this)
 
-            val isAlreadyHasSavedLocation =  athanViewMoldel.isSavedUserLocation.collectAsState()
-            val isNeedToGetAthansFromApi =  athanViewMoldel.isThereSavedAthanDates.collectAsState()
-
+            val isAlreadyHasSavedLocation = athanViewMoldel.isSavedUserLocation.collectAsState()
+            val isNeedToGetAthansFromApi = athanViewMoldel.isThereSavedAthanDates.collectAsState()
 
 
             val requestLocationPermission = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestMultiplePermissions(), onResult = { permissions ->
-                    val arePermissionsGranted = permissions.values.reduce { acc, next -> acc && next }
+                contract = ActivityResultContracts.RequestMultiplePermissions(),
+                onResult = { permissions ->
+                    val arePermissionsGranted =
+                        permissions.values.reduce { acc, next -> acc && next }
 
                     if (arePermissionsGranted) {
                         if (ActivityCompat.checkSelfPermission(
@@ -95,29 +94,29 @@ class MainActivity : ComponentActivity() {
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                             ) != PackageManager.PERMISSION_GRANTED
                         ) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
                             return@rememberLauncherForActivityResult
                         }
 
                         locationClient.lastLocation.apply {
                             addOnSuccessListener { location ->
 
-                                if(isNeedToGetAthansFromApi.value==null)
-                                    athanViewMoldel.getAthanDates(location?.latitude?:15.3522,location?.longitude?:44.2095);
+                                if (isNeedToGetAthansFromApi.value == null)
+                                    athanViewMoldel.getAthanDates(
+                                        location?.latitude ?: 15.3522,
+                                        location?.longitude ?: 44.2095
+                                    );
 
-                                athanViewMoldel.saveUserLocationToDB(location?.latitude?:15.3522,location?.longitude?:44.2095);
+                                athanViewMoldel.saveUserLocationToDB(
+                                    location?.latitude ?: 15.3522,
+                                    location?.longitude ?: 44.2095
+                                );
 
 
                             }
                             addOnFailureListener { fail ->
                                 Log.d(
-                                    "contextError", "the current location is null ${fail.stackTrace}"
+                                    "contextError",
+                                    "the current location is null ${fail.stackTrace}"
                                 )
 
                             }
@@ -138,28 +137,33 @@ class MainActivity : ComponentActivity() {
 
 
             LaunchedEffect(Unit) {
-                if(isAlreadyHasSavedLocation.value==false){
-                    requestLocationPermission.launch(arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                    ))
-                }else {
+                if (isAlreadyHasSavedLocation.value == false) {
+                    requestLocationPermission.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                        )
+                    )
+                } else {
                     athanViewMoldel.getAthanDates();
                 }
             }
 
+
+
+
             AthanTheme {
                 val navController = rememberNavController()
                 Scaffold(
-                bottomBar = {
-                    ApplicationButtonNavy(navController)
-                }
-                ) {
-                    innerPadding->
+                    containerColor = Color.White,
+                    bottomBar = {
+                        ApplicationButtonNavy(navController)
+                    }
+                ) { innerPadding ->
                     innerPadding.calculateTopPadding()
                     innerPadding.calculateBottomPadding()
 
-                    Navigation(navController,athanViewMoldel)
+                    Navigation(navController, athanViewMoldel)
 
                 }
 
@@ -169,11 +173,9 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
-
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun ApplicationButtonNavy(nav: NavHostController){
+fun ApplicationButtonNavy(nav: NavHostController) {
 
 
     val navBackStackEntry = nav.currentBackStackEntryAsState()
@@ -194,7 +196,7 @@ fun ApplicationButtonNavy(nav: NavHostController){
             ),
         ButtonNavItem(
             name = "القبلة",
-            imageId =ImageVector.vectorResource(R.drawable.compass)
+            imageId = ImageVector.vectorResource(R.drawable.compass)
         ),
         ButtonNavItem(
             name = "الاعدادات",
@@ -206,56 +208,56 @@ fun ApplicationButtonNavy(nav: NavHostController){
 
 
     Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(
-                        0.2.dp
-                    )
-                    .background(Color.Gray)
-            )
-            NavigationBar(
-                modifier = Modifier.background(Color.White),
-                tonalElevation = 5.dp,
-                containerColor = Color.White,
-                content = {
-                    buttonNavItemHolder.fastForEachIndexed { index, value ->
-                        val isSelectedItem =
-                            navBackStackEntry.value?.destination?.hasRoute(
-                                pages[index]::class
-                            ) == true
-                        NavigationBarItem(
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color.Black,
-                                unselectedIconColor = Color.Gray,
-                                selectedTextColor = Color.Black,
-                                unselectedTextColor = Color.Gray,
-                            ),
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(
+                    0.2.dp
+                )
+                .background(Color.Gray)
+        )
+        NavigationBar(
+            modifier = Modifier.background(Color.White),
+            tonalElevation = 5.dp,
+            containerColor = Color.White,
+            content = {
+                buttonNavItemHolder.fastForEachIndexed { index, value ->
+                    val isSelectedItem =
+                        navBackStackEntry.value?.destination?.hasRoute(
+                            pages[index]::class
+                        ) == true
+                    NavigationBarItem(
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color.Black,
+                            unselectedIconColor = Color.Gray,
+                            selectedTextColor = Color.Black,
+                            unselectedTextColor = Color.Gray,
+                        ),
 
-                            selected = isSelectedItem,
-                            onClick = {
-                                if (!isSelectedItem)
-                                    nav.navigate(pages[index])
-                            },
-                            label = {
-                                Text(
-                                    text = value.name,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = value.imageId,
-                                    contentDescription = "",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            })
-                    }
-
+                        selected = isSelectedItem,
+                        onClick = {
+                            if (!isSelectedItem)
+                                nav.navigate(pages[index])
+                        },
+                        label = {
+                            Text(
+                                text = value.name,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = value.imageId,
+                                contentDescription = "",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        })
                 }
-            )
-        }
+
+            }
+        )
+    }
 
 }

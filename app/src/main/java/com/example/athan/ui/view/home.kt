@@ -1,6 +1,9 @@
 package com.example.athan.ui.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.material3.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -31,11 +35,17 @@ fun Home(athanViewModel: AthanViewModel) {
     val config = LocalConfiguration.current
     val screenWidth = config.screenWidthDp
     val fixedWidth = (screenWidth / 3)
-    Scaffold(topBar = {
+    Scaffold(
+        containerColor = Color.White
+        ,topBar = {
+
         CenterAlignedTopAppBar(
             title = {
                 Text("مواقيت الصلاة")
-            }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White
+            )
         )
     })
     { innerPadding ->
@@ -51,6 +61,8 @@ fun Home(athanViewModel: AthanViewModel) {
         ) {
             item {
                 AnimatedVisibility(
+                    enter = fadeIn(tween(100)),
+                    exit = fadeOut(tween(500)),
                     visible = nextAthanTime.value != null,
                     content = {
                         Row(
@@ -87,6 +99,8 @@ fun Home(athanViewModel: AthanViewModel) {
                 if (!dayAthans.value?.athanTimes.isNullOrEmpty()) {
                     Sizer(25)
                     AnimatedVisibility(
+                        enter = fadeIn(tween(200)),
+                        exit = fadeOut(tween(200)),
                         visible = dayAthans.value != null,
                         content = {
                             Column {

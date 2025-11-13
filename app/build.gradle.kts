@@ -108,4 +108,11 @@ dependencies {
     implementation(libs.room.guava)
     testImplementation(libs.room.testing)
 
+
+    //qeblah direction
+    implementation("io.github.hassaanjamil:qiblaCompass:1.0.0")
+
+    //appcompact
+    implementation("androidx.appcompat:appcompat:1.6.1")
+
 }

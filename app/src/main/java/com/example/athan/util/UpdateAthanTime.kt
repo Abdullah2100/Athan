@@ -1,11 +1,11 @@
 package com.example.athan.util
 
+import com.example.athan.alarm.AlarmSchedule
 import com.example.athan.data.local.dao.DateDao
 import com.example.athan.data.local.dao.LocationDao
 import com.example.athan.data.local.dao.TimeDao
 import com.example.athan.data.local.entity.Time
 import com.example.athan.data.repository.ApiRepository
-import com.example.athan.model.AthanDay
 import com.example.athan.model.AthanTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.abs
 
 @Singleton
 class UpdateAthanTime @Inject constructor(
@@ -22,12 +23,13 @@ class UpdateAthanTime @Inject constructor(
     var time: TimeDao,
     var location: LocationDao,
     var apiRepository: ApiRepository,
-    val coroutineScope: CoroutineScope
+    val coroutineScope: CoroutineScope,
+    val alarmSchedule: AlarmSchedule
 ) {
     private val _nextAthanTime = MutableStateFlow<AthanTime?>(null)
+    private val _currentAthanName = MutableStateFlow<String?>(null)
     val nextAthanTime = _nextAthanTime.asStateFlow()
 
-    val _athanDay = MutableStateFlow<AthanDay?>(null)
 
 
 
@@ -51,6 +53,9 @@ class UpdateAthanTime @Inject constructor(
 
             //update the nextathan object in general file
             updateAthanTimeObject(nextAthan, hour, miutes)
+
+            //this function to display sound
+            displayAthanSound(nextAthan, hour, miutes)
         }
 
     }
@@ -81,6 +86,11 @@ class UpdateAthanTime @Inject constructor(
         //get the next athan time
         val nextAthan = dayAthans?.firstOrNull { it.hour >= currentHour }
 
+        if(!dayAthans.isNullOrEmpty()&&nextAthan==null)
+        {
+           return dayAthans[0]
+        }
+
         return nextAthan
     }
 
@@ -91,8 +101,15 @@ class UpdateAthanTime @Inject constructor(
         }
 
         val currentTimeToMinute = (currentHour * 60) + currentMinute
-        val athanTimeToMinit = (nextAthan.hour * 60) + nextAthan.minute;
-        val targetAthanTime = athanTimeToMinit - currentTimeToMinute;
+        var athanTimeToMinit = (nextAthan.hour * 60) + nextAthan.minute;
+        var targetAthanTime = athanTimeToMinit - currentTimeToMinute;
+
+        if(currentHour>18 && nextAthan.name=="الفجر")
+        {
+            athanTimeToMinit += abs((currentTimeToMinute) - (24 * 60))
+            targetAthanTime = abs(athanTimeToMinit-currentTimeToMinute)
+        }
+
         val targetHour = targetAthanTime / 60;
         val targetMinute = targetAthanTime % 60;
 
@@ -103,13 +120,26 @@ class UpdateAthanTime @Inject constructor(
             isMainPray = nextAthan.isMainPray
         )
 
-        // Only emit if the new value is actually different from the old one
-//        withContext(Dispatchers.Main)
-//        {
+        alarmSchedule.scheduleNextAthan(nextAthan);
         if (_nextAthanTime.value != newAthanTime) {
             _nextAthanTime.emit(newAthanTime)
         }
-//        }
+
     }
+
+    suspend fun displayAthanSound(nextAthan: Time?, currentHour: Int, currentMinute: Int) {
+        if (nextAthan == null) {
+            return;
+        }
+
+        val currentTimeToMinute = (currentHour * 60) + currentMinute
+        val athanTimeToMinit = (nextAthan.hour * 60) + nextAthan.minute;
+
+
+        if (athanTimeToMinit<=currentTimeToMinute &&  _currentAthanName.value != nextAthan.name ) {
+        }
+
+    }
+
 
 }

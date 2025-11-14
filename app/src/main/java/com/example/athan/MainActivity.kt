@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -46,7 +47,11 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.athan.services.TimeBroadcasts
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.athan.worker.UpdateAthanWorder
 import com.example.athan.ui.Navigation
 import com.example.athan.ui.Screens
 import com.example.athan.ui.theme.AthanTheme
@@ -54,21 +59,32 @@ import com.example.athan.viewModel.AthanViewModel
 import com.example.e_commercompose.model.ButtonNavItem
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     private val athanViewMoldel: AthanViewModel by viewModels()
 
 
-    override fun onStart() {
-        val timerBoardCast = TimeBroadcasts();
-        val intentFLag = IntentFilter(Intent.ACTION_TIME_TICK)
-        registerReceiver(timerBoardCast, intentFLag)
-        super.onStart()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        val syncWorkRequest = PeriodicWorkRequestBuilder<UpdateAthanWorder>(15, TimeUnit.MILLISECONDS)
+//            .build()
+
+        val syncWorkRequest =
+            OneTimeWorkRequestBuilder<UpdateAthanWorder>()
+                .setInitialDelay(5, TimeUnit.MILLISECONDS) // Starts in 5 seconds
+                .addTag("DEBUG_ATHAN_WORKER") // Use a tag to track it easily
+                .build()
+
+//        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+//            "uniqq",
+//            ExistingPeriodicWorkPolicy.KEEP,
+//            syncWorkRequest)
+        WorkManager.getInstance(this).enqueue(syncWorkRequest)
+
         enableEdgeToEdge()
         setContent {
 
@@ -96,6 +112,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             return@rememberLauncherForActivityResult
                         }
+
 
                         locationClient.lastLocation.apply {
                             addOnSuccessListener { location ->
@@ -138,12 +155,27 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 if (isAlreadyHasSavedLocation.value == false) {
-                    requestLocationPermission.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                        )
-                    )
+                    val permissionList =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                            arrayOf(
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.POST_NOTIFICATIONS,
+                                Manifest.permission.SCHEDULE_EXACT_ALARM,
+                            )
+                        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                            arrayOf(
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.SCHEDULE_EXACT_ALARM,
+                            )
+                        else
+                            arrayOf(
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                            )
+
+                    requestLocationPermission.launch(permissionList)
                 } else {
                     athanViewMoldel.getAthanDates();
                 }

@@ -1,6 +1,11 @@
 package com.example.athan.util
 
+import android.annotation.SuppressLint
 import android.icu.util.Calendar
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 
 object General {
@@ -37,6 +42,12 @@ object General {
       val newHour = if(!isMorning)hour-12 else hour
       return "$newHour:$Minute ${if(isMorning)"ص" else "م"}"
   }
+
+    @SuppressLint("SimpleDateFormat")
+    fun String.toDate(): Date?{
+        val format = SimpleDateFormat("yyyy-MM-dd")
+        return format.parse(this)
+    }
 
 
 }

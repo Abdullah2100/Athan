@@ -1,5 +1,6 @@
 package com.example.athan.di
 
+import android.app.AlarmManager
 import android.content.Context
 import android.util.Log
 import androidx.room.Room
@@ -27,7 +28,7 @@ import kotlinx.serialization.json.Json
 
 @Module
 @InstallIn(SingletonComponent::class)
-class Model {
+object Model {
 
     @Provides
     fun httpClient(): HttpClient {
@@ -63,6 +64,12 @@ class Model {
     @Provides
     fun generalContext(@ApplicationContext context: Context): Context {
         return context;
+    }
+
+    @Singleton
+    @Provides
+    fun alermSetting(@ApplicationContext context: Context): AlarmManager {
+        return context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
     @Provides

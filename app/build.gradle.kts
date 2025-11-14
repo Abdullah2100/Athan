@@ -37,6 +37,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "11"
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
 
     buildFeatures {
@@ -80,8 +81,9 @@ dependencies {
     implementation(libs.android.hilt)
     debugImplementation(libs.android.hilt.test)
     ksp(libs.hilt.comiler)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.nav)
-
+    implementation(libs.androidx.hilt.work)
 
     // Ktor dependencies
     implementation(libs.ktor.client.core)
@@ -110,9 +112,11 @@ dependencies {
 
 
     //qeblah direction
-    implementation("io.github.hassaanjamil:qiblaCompass:1.0.0")
+    implementation(libs.qiblacompass)
 
-    //appcompact
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    //worker
+    implementation(libs.androidx.work.runtime.ktx)
+
+
 
 }

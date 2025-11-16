@@ -26,6 +26,7 @@ fun AthanShape(time:String,name:String)
         )
     {
         Text(text =time, fontWeight = FontWeight.Normal)
-        Text(text =name, fontWeight = FontWeight.Bold)
+        Text(text =name, fontWeight = FontWeight.SemiBold)
     }
 }
+

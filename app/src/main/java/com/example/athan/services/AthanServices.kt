@@ -7,15 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import com.example.athan.R
+import com.example.athan.util.General.toCustomFil
 import com.example.athan.util.NotificationUtil
 import com.example.athan.util.NotificationUtil.CHANNEL_ID
 
 
 class AthanServices : Service() {
     var mediaPlayer: MediaPlayer? = null
-
 
     companion object {
         const val CLOSE_NOTIFICATION = "CLOSE_NOTIFICATION"
@@ -25,11 +27,30 @@ class AthanServices : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
 
-    fun playSound(context: Context) {
-        mediaPlayer = MediaPlayer.create(context, R.raw.azan1)
-        mediaPlayer?.start()
-        mediaPlayer?.setOnCompletionListener {
-            stopSound()
+    fun playSound(context: Context, intent: Intent? =null) {
+        try {
+            val athanSound = intent?.getStringExtra("url")
+
+            mediaPlayer = when (intent == null || athanSound==null) {
+                true -> {
+                    MediaPlayer.create(context, R.raw.azan1)
+                }
+
+                else -> {
+                    MediaPlayer.create(context, athanSound.toUri())
+                }
+            }
+
+            if (mediaPlayer != null && mediaPlayer!!.isPlaying)
+                mediaPlayer?.stop()
+
+            mediaPlayer?.start()
+            mediaPlayer?.setOnCompletionListener {
+                stopSound()
+            }
+        }catch (e: Exception)
+        {
+            Log.d("errorFromDisplayingSound",e.message.toString())
         }
     }
 
@@ -43,14 +64,13 @@ class AthanServices : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        if(intent?.getStringExtra(CLOSE_NOTIFICATION)==CLOSE_NOTIFICATION){
+        if (intent?.getStringExtra(CLOSE_NOTIFICATION) == CLOSE_NOTIFICATION) {
             stopSound()
             return START_NOT_STICKY
         }
 
         startForeground(FOREGROUND_SERVICE_ID, createNotification(this, intent))
-
-        playSound(this)
+        playSound(this,intent)
 
         return START_STICKY;
     }
@@ -59,7 +79,7 @@ class AthanServices : Service() {
     fun createNotification(context: Context, intent: Intent?): Notification {
         val athanName = intent?.getStringExtra("name") ?: ""
 
-        val closeIntent = Intent(context,AthanServices::class.java).apply {
+        val closeIntent = Intent(context, AthanServices::class.java).apply {
             putExtra(CLOSE_NOTIFICATION, CLOSE_NOTIFICATION)
         }
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Athan</string>
+    <string name="widget_description">this widget for displaying the athan</string>
 </resources>

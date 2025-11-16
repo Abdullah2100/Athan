@@ -15,6 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.glance.GlanceModifier
+import androidx.glance.appwidget.cornerRadius
+import androidx.glance.background
+import androidx.glance.layout.height
+import androidx.glance.layout.width
+import androidx.glance.unit.Dimension
 
 
 @Composable
@@ -38,6 +44,31 @@ fun AthanNextTimeComponent(
             contentAlignment = Alignment.Center
 
         ) {
+            Text(title, style = TextStyle(fontWeight = FontWeight.Black))
+        }
+        Sizer(height = 4)
+        Text(description)
+
+    }
+}
+
+
+@Composable
+fun AthanNextTimeComponentGalance(
+    screenWidth:Int,
+    title:String,
+    description:String
+){
+    androidx.glance.layout.Column (
+        verticalAlignment = androidx.glance.layout.Alignment.CenterVertically,
+        horizontalAlignment = androidx.glance.layout.Alignment.CenterHorizontally
+    ) {
+        androidx.glance.layout.Box (modifier = GlanceModifier.run {
+            width((screenWidth-10).dp)
+                .height(70.dp)
+                .background(Color(0xffF0F2F4))
+                .cornerRadius(radius = 8.toInt())
+        }) {
             Text(title, style = TextStyle(fontWeight = FontWeight.Black))
         }
         Sizer(height = 4)

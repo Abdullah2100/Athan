@@ -33,7 +33,7 @@ class LocalDBRepository @Inject constructor(
                             hour = (hourMinute[0]).toInt(),
                             minute = (hourMinute[1]).toInt(),
                             isMainPray = true,
-                            name = "الفجر",
+                            name = "Fajr",
                             date = date.date
                         )
                     }
@@ -45,7 +45,7 @@ class LocalDBRepository @Inject constructor(
                             hour = (hourMinute[0]).toInt(),
                             minute = (hourMinute[1]).toInt(),
                             isMainPray = false,
-                            name = "الشروق",
+                            name = "Sunrise",
                             date = date.date
                         )
                     }
@@ -57,7 +57,7 @@ class LocalDBRepository @Inject constructor(
                             hour = (hourMinute[0]).toInt(),
                             minute = (hourMinute[1]).toInt(),
                             isMainPray = true,
-                            name = "الظهر",
+                            name = "Dhuhr",
                             date = date.date
                         )
                     }
@@ -69,7 +69,7 @@ class LocalDBRepository @Inject constructor(
                             hour = (hourMinute[0]).toInt(),
                             minute = (hourMinute[1]).toInt(),
                             isMainPray = true,
-                            name = "العصر",
+                            name = "Asr",
                             date = date.date
 
                         )
@@ -82,7 +82,7 @@ class LocalDBRepository @Inject constructor(
                             hour = (hourMinute[0]).toInt(),
                             minute = (hourMinute[1]).toInt(),
                             isMainPray = true,
-                            name = "المغرب",
+                            name = "Maghrib",
                             date = date.date
 
                         )
@@ -95,7 +95,7 @@ class LocalDBRepository @Inject constructor(
                             hour = (hourMinute[0]).toInt(),
                             minute = (hourMinute[1]).toInt(),
                             isMainPray = true,
-                            name = "العشاء",
+                            name = "Isha",
                             date = date.date
                         )
                     }

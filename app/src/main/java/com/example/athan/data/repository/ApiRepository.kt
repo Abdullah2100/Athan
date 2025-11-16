@@ -103,8 +103,8 @@ class ApiRepository @Inject constructor(
         else
             getAthans(
 
-                lat!!,
                 lon!!,
+                lat!!,
                 currentDate,
                 nextDate,
             )

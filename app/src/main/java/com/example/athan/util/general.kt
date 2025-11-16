@@ -1,11 +1,15 @@
 package com.example.athan.util
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.icu.util.Calendar
+import android.net.Uri
+import android.provider.OpenableColumns
+import android.util.Log
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
 
 object General {
@@ -40,8 +44,39 @@ object General {
       val Minute = this[1]
       val isMorning = if(hour<12)true else false
       val newHour = if(!isMorning)hour-12 else hour
-      return "$newHour:$Minute ${if(isMorning)"ص" else "م"}"
+      return "$newHour:$Minute ${if(isMorning)"AM" else "PM"}"
   }
+
+    fun Uri.toCustomFil(context: Context): File? {
+        val contentResolver = context.contentResolver
+        val fileName = contentResolver.query(this, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val displayNameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (displayNameIndex != -1) {
+                    cursor.getString(displayNameIndex)
+                } else {
+                    null
+                }
+            } else {
+                null
+            }
+        } ?: "temp_audio_file"
+
+        val file = File(context.cacheDir, fileName)
+        try {
+            val inputStream = contentResolver.openInputStream(this)
+            val outputStream = FileOutputStream(file)
+            inputStream?.use { input ->
+                outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("errorFromSelectAudio", e.message.toString())
+            return null
+        }
+        return file
+    }
 
     @SuppressLint("SimpleDateFormat")
     fun String.toDate(): Date?{

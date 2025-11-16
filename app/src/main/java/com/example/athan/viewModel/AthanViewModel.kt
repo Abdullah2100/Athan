@@ -1,10 +1,13 @@
 package com.example.athan.viewModel
 
+import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.athan.data.local.dao.LocationDao
+import com.example.athan.data.local.entity.Athan
 import com.example.athan.data.local.entity.Location
 import com.example.athan.data.repository.ApiRepository
+import com.example.athan.data.repository.AthanRepository
 import com.example.athan.data.repository.LocalDBRepository
 import com.example.athan.model.AthanDay
 import com.example.athan.util.General
@@ -16,12 +19,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 @HiltViewModel
 class AthanViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
+    private val athanRepository: AthanRepository,
     private val locationDao: LocationDao,
     private val localDBRepository: LocalDBRepository,
     private val athanUpdateOb: UpdateAthanTime,
@@ -30,9 +33,13 @@ class AthanViewModel @Inject constructor(
     ) : ViewModel() {
 
     //private
-    val _athanDay = MutableStateFlow<AthanDay?>(null)
-
+   private val _athanDay = MutableStateFlow<AthanDay?>(null)
      val athanDay = _athanDay.asStateFlow()
+
+
+    private val _athanSaved = MutableStateFlow<Athan?>(null)
+
+    val athanSaved = _athanSaved.asStateFlow()
 
 
     private val _isThereSavedAthanDates = MutableStateFlow<Boolean?>(null)
@@ -46,6 +53,25 @@ class AthanViewModel @Inject constructor(
     init {
         isUserHasSavedLocation()
         isThereAthanDateExist()
+        getSavedAthan()
+    }
+
+
+    //this to get saved athan in room database
+    private fun getSavedAthan(){
+        appScope.launch {
+            val savedAthan = athanRepository.getSavedAthan()
+            _athanSaved.emit(savedAthan)
+        }
+    }
+
+    fun saveAthanToLocalAthan(fileUrl: Uri?){
+        if(fileUrl==null)return;
+        appScope.launch(Dispatchers.IO) {
+            val athan = Athan(1,fileUrl.toString())
+            athanRepository.savedAthan(athan)
+            _athanSaved.emit(athan)
+        }
     }
 
 
@@ -77,12 +103,13 @@ class AthanViewModel @Inject constructor(
 
     //this function to fill the _savedDate with data from room database using current day
     private suspend fun updateAthanObject() {
+            _athanDay.emit(null)
             _athanDay.emit(localDBRepository.getCurrentAthan())
     }
 
 
     //get Athan from api
-    fun getAthanDates(lat: Double? = null, lon: Double? = null) {
+    fun getAthanDates(lat: Double? = null, lon: Double? = null,isrefresh: MutableState<Boolean>?=null) {
         appScope.launch(Dispatchers.IO) {
 
             val isThereSavedDates = localDBRepository.isThereAthanDateExist()
@@ -103,12 +130,16 @@ class AthanViewModel @Inject constructor(
                         athanUpdateOb.updateNextAthanObjectFun()
                         updateAthanObject()
 
+                        if(isrefresh!=null)
+                            isrefresh.value=false
+
                     }
                 }
-
                 else -> {
                     athanUpdateOb.updateNextAthanObjectFun()
                     updateAthanObject()
+                    if(isrefresh!=null)
+                        isrefresh.value=false
                 }
             }
         }

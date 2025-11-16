@@ -2,8 +2,6 @@ package com.example.athan
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -48,6 +46,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -70,20 +69,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val syncWorkRequest = PeriodicWorkRequestBuilder<UpdateAthanWorder>(15, TimeUnit.MILLISECONDS)
-//            .build()
 
-        val syncWorkRequest =
-            OneTimeWorkRequestBuilder<UpdateAthanWorder>()
-                .setInitialDelay(5, TimeUnit.MILLISECONDS) // Starts in 5 seconds
-                .addTag("DEBUG_ATHAN_WORKER") // Use a tag to track it easily
-                .build()
+        val workManager = WorkManager.getInstance(applicationContext)
+        val nextWork = OneTimeWorkRequestBuilder<UpdateAthanWorder>()
+            .setInitialDelay(1, TimeUnit.MINUTES)
+            .build()
 
-//        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-//            "uniqq",
-//            ExistingPeriodicWorkPolicy.KEEP,
-//            syncWorkRequest)
-        WorkManager.getInstance(this).enqueue(syncWorkRequest)
+        workManager.enqueueUniqueWork(
+            "UpdateAthanWork",
+            ExistingWorkPolicy.REPLACE,
+            nextWork
+        )
+
 
         enableEdgeToEdge()
         setContent {
@@ -92,7 +89,7 @@ class MainActivity : ComponentActivity() {
             val locationClient = LocationServices.getFusedLocationProviderClient(this)
 
             val isAlreadyHasSavedLocation = athanViewMoldel.isSavedUserLocation.collectAsState()
-            val isNeedToGetAthansFromApi = athanViewMoldel.isThereSavedAthanDates.collectAsState()
+            val isThereAthanAtDb = athanViewMoldel.isThereSavedAthanDates.collectAsState()
 
 
             val requestLocationPermission = rememberLauncherForActivityResult(
@@ -116,19 +113,19 @@ class MainActivity : ComponentActivity() {
 
                         locationClient.lastLocation.apply {
                             addOnSuccessListener { location ->
+                                if (location != null) {
+                                    if (isThereAthanAtDb.value == null || isThereAthanAtDb.value == false)
+                                        athanViewMoldel.getAthanDates(
+                                            location.latitude,
+                                            location.longitude
+                                        );
 
-                                if (isNeedToGetAthansFromApi.value == null)
-                                    athanViewMoldel.getAthanDates(
-                                        location?.latitude ?: 15.3522,
-                                        location?.longitude ?: 44.2095
+                                    athanViewMoldel.saveUserLocationToDB(
+                                        location.latitude,
+                                        location.longitude
                                     );
 
-                                athanViewMoldel.saveUserLocationToDB(
-                                    location?.latitude ?: 15.3522,
-                                    location?.longitude ?: 44.2095
-                                );
-
-
+                                }
                             }
                             addOnFailureListener { fail ->
                                 Log.d(
@@ -222,16 +219,16 @@ fun ApplicationButtonNavy(nav: NavHostController) {
 
     val buttonNavItemHolder = listOf(
         ButtonNavItem(
-            name = "الرئيسية",
+            name = "Home",
             imageId = Icons.Outlined.Home,
 
             ),
         ButtonNavItem(
-            name = "القبلة",
+            name = "Qeblah",
             imageId = ImageVector.vectorResource(R.drawable.compass)
         ),
         ButtonNavItem(
-            name = "الاعدادات",
+            name = "Setting",
             imageId = Icons.Outlined.Settings,
 
             ),

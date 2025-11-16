@@ -102,4 +102,8 @@ object Model {
     fun applicationScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob()+ Dispatchers.Default)
     }
+
+    @Provides
+    @Singleton
+    fun athanDao(athanDataBase: AthanDataBase) = athanDataBase.athanDao()
 }

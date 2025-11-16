@@ -7,13 +7,15 @@ import android.content.Context
 import android.content.Intent
 import com.example.athan.Broadcast.AlarmBroadCast
 import com.example.athan.data.local.entity.Time
+import com.example.athan.data.repository.AthanRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import javax.inject.Inject
 
 class AlarmSchedule @Inject constructor(
     @ApplicationContext val context: Context,
-    private val alarmManager: AlarmManager
+    private val alarmManager: AlarmManager,
+    private  val athanRepository: AthanRepository
 ) {
 
     companion object {
@@ -21,21 +23,27 @@ class AlarmSchedule @Inject constructor(
     }
 
     @SuppressLint("ScheduleExactAlarm")
-     fun scheduleNextAthan(nextAthanTime: Time) {
+   suspend  fun scheduleNextAthan(nextAthanTime: Time) {
         val calender = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, nextAthanTime.hour)
-            set(Calendar.MINUTE, nextAthanTime.minute)
+//            set(Calendar.HOUR_OF_DAY, nextAthanTime.hour)
+//            set(Calendar.MINUTE, nextAthanTime.minute)
+
+            set(Calendar.HOUR_OF_DAY, 11)
+            set(Calendar.MINUTE, 16)
+
             set(Calendar.SECOND, 0)
+
             set(Calendar.MILLISECOND, 0)
 
             if (nextAthanTime.name == "فجر" && get(Calendar.HOUR_OF_DAY) > 18) {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
         }
-
+        val savedAthan = athanRepository.getSavedAthan();
         val intent = Intent(context, AlarmBroadCast::class.java).apply {
             action =ALARM_ACTION
             putExtra("name", nextAthanTime.name)
+            putExtra("url", savedAthan?.path)
         }
         val pending = PendingIntent.getBroadcast(
             context,

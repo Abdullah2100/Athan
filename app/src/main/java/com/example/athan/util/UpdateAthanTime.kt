@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -54,9 +55,7 @@ class UpdateAthanTime @Inject constructor(
             //update the nextathan object in general file
             updateAthanTimeObject(nextAthan, hour, miutes)
 
-            //this function to display sound
-            displayAthanSound(nextAthan, hour, miutes)
-        }
+               }
 
     }
 
@@ -121,23 +120,13 @@ class UpdateAthanTime @Inject constructor(
         )
 
         alarmSchedule.scheduleNextAthan(nextAthan);
-        if (_nextAthanTime.value != newAthanTime) {
-            _nextAthanTime.emit(newAthanTime)
+        withContext(Dispatchers.Main)
+        {
+            if (_nextAthanTime.value != newAthanTime) {
+                _nextAthanTime.emit(newAthanTime)
+            }
         }
 
-    }
-
-    suspend fun displayAthanSound(nextAthan: Time?, currentHour: Int, currentMinute: Int) {
-        if (nextAthan == null) {
-            return;
-        }
-
-        val currentTimeToMinute = (currentHour * 60) + currentMinute
-        val athanTimeToMinit = (nextAthan.hour * 60) + nextAthan.minute;
-
-
-        if (athanTimeToMinit<=currentTimeToMinute &&  _currentAthanName.value != nextAthan.name ) {
-        }
 
     }
 

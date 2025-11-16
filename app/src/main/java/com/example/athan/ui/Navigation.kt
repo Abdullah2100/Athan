@@ -4,6 +4,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,10 +12,15 @@ import com.example.athan.ui.view.Home
 import com.example.athan.ui.view.Qeblah
 import com.example.athan.ui.view.Setting
 import com.example.athan.viewModel.AthanViewModel
+import com.example.athan.viewModel.ConnectivityViewModel
 
 
 @Composable
-fun Navigation(nav: NavHostController, athanViewMoldel: AthanViewModel)
+fun Navigation(
+    nav: NavHostController,
+    athanViewModel: AthanViewModel,
+    connectivityModel: ConnectivityViewModel = hiltViewModel()
+    )
 {
     NavHost(navController = nav, startDestination = Screens.HomeScreen) {
 
@@ -25,7 +31,7 @@ fun Navigation(nav: NavHostController, athanViewMoldel: AthanViewModel)
             exitTransition = {
         return@composable fadeOut(tween(200))
     }){
-            Home(athanViewMoldel)
+            Home(athanViewModel,connectivityModel)
         }
 
         composable<Screens.SettingScreen>(
@@ -35,7 +41,7 @@ fun Navigation(nav: NavHostController, athanViewMoldel: AthanViewModel)
             exitTransition = {
                 return@composable fadeOut(tween(200))
             }){
-            Setting()
+            Setting(athanViewModel)
         }
 
         composable<Screens.QeblahScreen>(

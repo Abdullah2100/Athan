@@ -55,7 +55,7 @@ fun Qeblah() {
             containerColor = Color.White,
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text(" القبلة") },
+                    title = { Text("Qeblah") },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.White
                     )

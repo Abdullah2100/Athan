@@ -12,9 +12,9 @@ A modern and user-friendly Athan application for the Muslim community. This app 
 
 *(Add some screenshots of your applicati## Screenshots
 
-<img src="screenshots/screenshot_prayer_times.png" width="250"> 
-<img src="screenshots/screenshot_qibla.png" width="250"> 
-<img src="screenshots/screenshot_settings.png" width="250">
+<img src="screenshots/Screenshot_20251119-112958" width="250"> 
+<img src="screenshots/Screenshot_20251119-113106.png" width="250"> 
+<img src="screenshots/Screenshot_20251119-113112.png" width="250">
 
 ## Installation
 

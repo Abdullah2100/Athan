@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,8 +19,6 @@ import androidx.glance.appwidget.cornerRadius
 import androidx.glance.background
 import androidx.glance.layout.height
 import androidx.glance.layout.width
-import androidx.glance.unit.Dimension
-
 
 @Composable
 fun AthanNextTimeComponent(
@@ -44,35 +41,34 @@ fun AthanNextTimeComponent(
             contentAlignment = Alignment.Center
 
         ) {
-            Text(title, style = TextStyle(fontWeight = FontWeight.Black))
+            androidx.compose.material3.Text(title, style = TextStyle(fontWeight = FontWeight.Black))
         }
         Sizer(height = 4)
-        Text(description)
+        androidx.compose.material3.Text(description)
 
     }
 }
 
 
 @Composable
-fun AthanNextTimeComponentGalance(
+fun AthanNextTimeComponentGlance(
     screenWidth:Int,
     title:String,
     description:String
 ){
-    androidx.glance.layout.Column (
+    androidx.glance.layout. Column (
         verticalAlignment = androidx.glance.layout.Alignment.CenterVertically,
         horizontalAlignment = androidx.glance.layout.Alignment.CenterHorizontally
     ) {
-        androidx.glance.layout.Box (modifier = GlanceModifier.run {
+       androidx.glance.layout.Box (modifier = GlanceModifier.run {
             width((screenWidth-10).dp)
                 .height(70.dp)
                 .background(Color(0xffF0F2F4))
                 .cornerRadius(radius = 8.toInt())
         }) {
-            Text(title, style = TextStyle(fontWeight = FontWeight.Black))
+            androidx.glance.text.Text(title, style = androidx.glance.text.TextStyle(fontWeight = androidx.glance.text.FontWeight.Bold))
         }
-        Sizer(height = 4)
-        Text(description)
+       androidx.glance.text.Text(description)
 
     }
 }

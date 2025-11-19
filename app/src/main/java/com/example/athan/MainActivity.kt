@@ -70,16 +70,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
 
-        val workManager = WorkManager.getInstance(applicationContext)
-        val nextWork = OneTimeWorkRequestBuilder<UpdateAthanWorder>()
-            .setInitialDelay(1, TimeUnit.MINUTES)
+        val workManager = WorkManager.getInstance(this)
+        val nextWork = PeriodicWorkRequestBuilder<UpdateAthanWorder>(1, TimeUnit.MINUTES)
             .build()
 
-        workManager.enqueueUniqueWork(
+        workManager.enqueueUniquePeriodicWork(
             "UpdateAthanWork",
-            ExistingWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.KEEP,
             nextWork
         )
+
 
 
         enableEdgeToEdge()

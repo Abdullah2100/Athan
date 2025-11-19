@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -47,7 +48,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
     }
+
+
 }
+
+
 
 dependencies {
 
@@ -117,6 +122,7 @@ dependencies {
     //worker
     implementation(libs.androidx.work.runtime.ktx)
 
-
+    //datastore
+    implementation(libs.androidx.datastore.preferences)
 
 }

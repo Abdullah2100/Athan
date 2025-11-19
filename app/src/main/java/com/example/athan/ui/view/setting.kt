@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.example.athan.util.General.toCustomFil
 import com.example.athan.viewModel.AthanViewModel
 
@@ -38,7 +39,8 @@ fun Setting(athanViewModel: AthanViewModel) {
         contract = ActivityResultContracts.GetContent(),
     ) { uri ->
         uri?.let {
-            athanViewModel.saveAthanToLocalAthan(it)
+            val file = it.toCustomFil(context)?.absoluteFile
+            athanViewModel.saveAthanToLocalAthan(file?.toUri())
         }
     }
 

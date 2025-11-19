@@ -22,12 +22,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <!--    storage-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
     <application
         android:name=".AppApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -57,11 +58,15 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".ui.galance.GalnceRceiverHolder"
-            android:exported="false">
-           <intent-filter>
-               <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-           </intent-filter>
+        <receiver
+            android:name=".ui.galance.AthanGlanceWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/app_widget" />
         </receiver>
 
 

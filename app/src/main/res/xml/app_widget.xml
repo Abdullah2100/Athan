@@ -4,7 +4,7 @@
     android:minHeight="180dp"
     android:minWidth="180dp"
     android:description="@string/action_settings"
-    android:previewLayout="@layout/layout"
+    android:initialLayout="@layout/layout"
     android:minResizeHeight="90dp"
     android:minResizeWidth="90dp"
     android:targetCellHeight="2"
@@ -12,4 +12,5 @@
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="86400000"
     android:widgetCategory="home_screen"
-    tools:targetApi="31" />
+    tools:targetApi="31" >
+</appwidget-provider>

@@ -32,8 +32,6 @@ class UpdateAthanTime @Inject constructor(
     val nextAthanTime = _nextAthanTime.asStateFlow()
 
 
-
-
     fun updateNextAthanObjectFun() {
 
         coroutineScope.launch(Dispatchers.IO) {
@@ -55,7 +53,7 @@ class UpdateAthanTime @Inject constructor(
             //update the nextathan object in general file
             updateAthanTimeObject(nextAthan, hour, miutes)
 
-               }
+        }
 
     }
 
@@ -85,9 +83,8 @@ class UpdateAthanTime @Inject constructor(
         //get the next athan time
         val nextAthan = dayAthans?.firstOrNull { it.hour >= currentHour }
 
-        if(!dayAthans.isNullOrEmpty()&&nextAthan==null)
-        {
-           return dayAthans[0]
+        if (!dayAthans.isNullOrEmpty() && nextAthan == null) {
+            return dayAthans[0]
         }
 
         return nextAthan
@@ -99,14 +96,14 @@ class UpdateAthanTime @Inject constructor(
             return;
         }
 
-        val currentTimeToMinute = (currentHour * 60) + currentMinute
+        var currentTimeToMinute = (currentHour * 60) + currentMinute
         var athanTimeToMinit = (nextAthan.hour * 60) + nextAthan.minute;
         var targetAthanTime = athanTimeToMinit - currentTimeToMinute;
 
-        if(currentHour>18 && nextAthan.name=="الفجر")
-        {
-            athanTimeToMinit += abs((currentTimeToMinute) - (24 * 60))
-            targetAthanTime = abs(athanTimeToMinit-currentTimeToMinute)
+        if (currentHour > 18 && nextAthan.name == "Fajr") {
+            currentTimeToMinute = abs(((currentHour * 60) + currentMinute) - (24 * 60))
+            athanTimeToMinit = (nextAthan.hour * 60) + nextAthan.minute
+            targetAthanTime = athanTimeToMinit + currentTimeToMinute
         }
 
         val targetHour = targetAthanTime / 60;

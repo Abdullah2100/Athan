@@ -25,11 +25,8 @@ class AlarmSchedule @Inject constructor(
     @SuppressLint("ScheduleExactAlarm")
    suspend  fun scheduleNextAthan(nextAthanTime: Time) {
         val calender = Calendar.getInstance().apply {
-//            set(Calendar.HOUR_OF_DAY, nextAthanTime.hour)
-//            set(Calendar.MINUTE, nextAthanTime.minute)
-
-            set(Calendar.HOUR_OF_DAY, 11)
-            set(Calendar.MINUTE, 16)
+            set(Calendar.HOUR_OF_DAY, nextAthanTime.hour)
+            set(Calendar.MINUTE, nextAthanTime.minute)
 
             set(Calendar.SECOND, 0)
 

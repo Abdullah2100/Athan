@@ -1,7 +1,9 @@
 package com.example.athan.model
 
-import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 
+@Serializable
 data class AthanTime(
      val id: Int? = null,
      val name:String,

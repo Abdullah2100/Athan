@@ -11,7 +11,6 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.example.athan.R
-import com.example.athan.util.General.toCustomFil
 import com.example.athan.util.NotificationUtil
 import com.example.athan.util.NotificationUtil.CHANNEL_ID
 
@@ -27,50 +26,54 @@ class AthanServices : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
 
-    fun playSound(context: Context, intent: Intent? =null) {
+    fun playSound(context: Context, intent: Intent? = null) {
         try {
+
             val athanSound = intent?.getStringExtra("url")
 
-            mediaPlayer = when (intent == null || athanSound==null) {
-                true -> {
-                    MediaPlayer.create(context, R.raw.azan1)
-                }
+            stopSound()
 
+            mediaPlayer = when (athanSound) {
+
+                null -> MediaPlayer.create(context, R.raw.azan1)
                 else -> {
                     MediaPlayer.create(context, athanSound.toUri())
                 }
+
             }
 
-            if (mediaPlayer != null && mediaPlayer!!.isPlaying)
-                mediaPlayer?.stop()
 
             mediaPlayer?.start()
             mediaPlayer?.setOnCompletionListener {
-                stopSound()
+                fullStop()
             }
-        }catch (e: Exception)
-        {
-            Log.d("errorFromDisplayingSound",e.message.toString())
+        } catch (e: Exception) {
+            Log.d("errorFromDisplayingSound", e.stackTrace.toString())
         }
     }
 
-    fun stopSound() {
-        if (mediaPlayer != null) {
-            mediaPlayer!!.stop()
-            stopSelf()
-
+    fun stopSound(){
+        if(mediaPlayer !=null)
+        {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
         }
+    }
+    fun fullStop(): Int {
+        stopSound()
+        stopSelf()
+        return START_STICKY;
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         if (intent?.getStringExtra(CLOSE_NOTIFICATION) == CLOSE_NOTIFICATION) {
-            stopSound()
+            fullStop()
             return START_NOT_STICKY
         }
 
         startForeground(FOREGROUND_SERVICE_ID, createNotification(this, intent))
-        playSound(this,intent)
+        playSound(this, intent)
 
         return START_STICKY;
     }

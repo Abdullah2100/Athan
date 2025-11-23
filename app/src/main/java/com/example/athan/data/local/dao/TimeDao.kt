@@ -13,12 +13,12 @@ interface TimeDao {
     suspend fun insert(time: Time)
 
     @Query("SELECT * FROM AthanTime")
-    suspend fun getTimes(): List<Time>?
+    suspend fun getTimes(): List<Time>
 
     @Query("SELECT * FROM AthanTime where dateId=:dateId")
-    suspend fun getTimesByDateId(dateId:Int): List<Time>?
+    suspend fun getTimesByDateId(dateId:Int): List<Time>
 
 
     @Query("SELECT * FROM AthanTime where date=:date")
-    suspend fun getTimesByDate(date: String): List<Time>?
+    suspend fun getTimesByDate(date: String): List<Time>
 }

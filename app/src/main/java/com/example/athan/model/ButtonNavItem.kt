@@ -6,6 +6,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 
 data class ButtonNavItem(
- val name: String,
+ val name: Int,
     val imageId: ImageVector,
 )

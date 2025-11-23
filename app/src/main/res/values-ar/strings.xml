@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">أذان</string>
+    <string name="widget_description">هذه الأداة لعرض الأذان</string>
+    <string name="prayer_times">أوقات الصلاة</string>
+    <string name="hours">ساعات</string>
+    <string name="minutes">دقائق</string>
+    <string name="salah">صلاة</string>
+    <string name="qeblah">قبلة</string>
+    <string name="settings">إعدادات</string>
+    <string name="athan_sound">صوت الأذان</string>
+    <string name="chose">اختر</string>
+    <string name="_default">افتراضي</string>
+    <string name="home">الرئيسية</string>
+    <string name="setting">الاعدادات</string>
+    <string name="fajr">الفجر</string>
+    <string name="sunrise">الشروق</string>
+    <string name="dhuhr">الظهر</string>
+    <string name="asr">العصر</string>
+    <string name="maghrib">المغرب</string>
+    <string name="isha">العشاء</string>
+    <string name="pm">مساء</string>
+    <string name="am">صباح</string>
+</resources>

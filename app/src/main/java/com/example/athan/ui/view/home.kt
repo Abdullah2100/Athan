@@ -1,5 +1,6 @@
 package com.example.athan.ui.view
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -24,7 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.athan.R
 import com.example.athan.ui.view.component.AthanNextTimeComponent
 import com.example.athan.ui.view.component.AthanShape
 import com.example.athan.ui.view.component.Sizer
@@ -34,10 +38,14 @@ import com.example.athan.viewModel.ConnectivityViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(athanViewModel: AthanViewModel, connectivityModel: ConnectivityViewModel) {
-
+fun Home(
+    athanViewModel: AthanViewModel,
+    connectivityModel: ConnectivityViewModel
+) {
+    val context = LocalContext.current
     val config = LocalConfiguration.current
     val screenWidth = config.screenWidthDp
     val fixedWidth = (screenWidth / 3)
@@ -45,7 +53,7 @@ fun Home(athanViewModel: AthanViewModel, connectivityModel: ConnectivityViewMode
     val state = rememberPullToRefreshState()
     val coroutine = rememberCoroutineScope()
 
-    val dayAthans = athanViewModel.athanDay.collectAsState();
+    val dayAthens = athanViewModel.athanDay.collectAsState();
     val nextAthanTime = athanViewModel.currentAthanOb.collectAsState();
     val isNetworkAvailable = connectivityModel.isConnectToInternet.collectAsState()
 
@@ -56,7 +64,7 @@ fun Home(athanViewModel: AthanViewModel, connectivityModel: ConnectivityViewMode
 
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Prayer Times")
+                    Text(stringResource(R.string.prayer_times))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White
@@ -74,7 +82,8 @@ fun Home(athanViewModel: AthanViewModel, connectivityModel: ConnectivityViewMode
                 if (isNetworkAvailable.value) {
                     coroutine.launch {
 
-                        if (!isRefresh.value) {isRefresh.value = true
+                        if (!isRefresh.value) {
+                            isRefresh.value = true
                             delay(100)
                         }
                         athanViewModel.getAthanDates(isrefresh = isRefresh)
@@ -117,19 +126,19 @@ fun Home(athanViewModel: AthanViewModel, connectivityModel: ConnectivityViewMode
                                 AthanNextTimeComponent(
                                     fixedWidth,
                                     nextAthanTime.value?.hour.toString(),
-                                    "Hours"
+                                    stringResource(R.string.hours)
                                 )
                                 Sizer(width = 5)
                                 AthanNextTimeComponent(
                                     fixedWidth,
                                     nextAthanTime.value?.minute.toString(),
-                                    "Minutes"
+                                    stringResource(R.string.minutes)
                                 )
                                 Sizer(width = 5)
                                 AthanNextTimeComponent(
                                     fixedWidth,
                                     nextAthanTime.value?.name.toString(),
-                                    "Salah"
+                                    stringResource(R.string.salah)
                                 )
                             }
 
@@ -138,18 +147,30 @@ fun Home(athanViewModel: AthanViewModel, connectivityModel: ConnectivityViewMode
                 }
 
                 item {
-                    if (!dayAthans.value?.athanTimes.isNullOrEmpty()) {
+                    if (!dayAthens.value?.athanTimes.isNullOrEmpty()) {
                         Sizer(30)
                         AnimatedVisibility(
                             enter = fadeIn(tween(200)),
                             exit = fadeOut(tween(200)),
-                            visible = dayAthans.value != null,
+                            visible = dayAthens.value != null,
                             content = {
                                 Column {
-                                    dayAthans.value?.athanTimes?.forEach { value ->
+                                    dayAthens.value?.athanTimes?.forEachIndexed { index, value ->
                                         AthanShape(
-                                            listOf(value.hour, value.minute).toValidDayHour(),
-                                            value.name
+                                            listOf(
+                                                value.hour,
+                                                value.minute
+                                            ).toValidDayHour(context),
+                                            stringResource(
+                                                when (index) {
+                                                    0 -> R.string.fajr
+                                                    1 -> R.string.sunrise
+                                                    2 -> R.string.dhuhr
+                                                    3 -> R.string.asr
+                                                    4 -> R.string.maghrib
+                                                    else -> R.string.isha
+                                                }
+                                            )
                                         )
                                     }
                                 }

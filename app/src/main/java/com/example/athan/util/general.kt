@@ -6,6 +6,7 @@ import android.icu.util.Calendar
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
+import com.example.athan.R
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -38,13 +39,13 @@ object General {
 
 
 
-  fun   List<Int>.toValidDayHour():String
+  fun   List<Int>.toValidDayHour(context: Context):String
   {
       val hour = this[0]
       val Minute = this[1]
       val isMorning = if(hour<12)true else false
       val newHour = if(!isMorning)hour-12 else hour
-      return "$newHour:$Minute ${if(isMorning)"AM" else "PM"}"
+      return "$newHour:$Minute ${if(isMorning) context.getString(R.string.am) else context.getString(R.string.pm)}"
   }
 
     fun Uri.toCustomFil(context: Context): File? {

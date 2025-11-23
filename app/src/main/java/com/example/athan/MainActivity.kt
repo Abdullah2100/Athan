@@ -2,6 +2,7 @@ package com.example.athan
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,23 +33,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.athan.worker.UpdateAthanWorder
@@ -55,19 +63,36 @@ import com.example.athan.ui.Navigation
 import com.example.athan.ui.Screens
 import com.example.athan.ui.theme.AthanTheme
 import com.example.athan.viewModel.AthanViewModel
+import com.example.athan.viewModel.ConnectivityViewModel
+import com.example.athan.viewModel.LocaleViewModel
 import com.example.e_commercompose.model.ButtonNavItem
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val athanViewMoldel: AthanViewModel by viewModels()
-
+    private val localeViewModel: LocaleViewModel by viewModels()
+    private val connectivityViewModel: ConnectivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        localeViewModel.updateContext(this@MainActivity)
+        localeViewModel.setDefaultLocale("en")
+
+
+        lifecycleScope.launch {
+            localeViewModel.savedLocale.collect{ value->
+                if(value!=null){
+                    localeViewModel.updateLocale(value.name)
+                    localeViewModel.whenLanguageUpdateDo(value.name)
+                    return@collect
+                }
+            }
+        }
 
 
         val workManager = WorkManager.getInstance(this)
@@ -81,16 +106,30 @@ class MainActivity : ComponentActivity() {
         )
 
 
+        // Check and request battery optimization exemption for reliable alarms
 
         enableEdgeToEdge()
         setContent {
 
+            val navController = rememberNavController()
 
             val locationClient = LocationServices.getFusedLocationProviderClient(this)
 
             val isAlreadyHasSavedLocation = athanViewMoldel.isSavedUserLocation.collectAsState()
             val isThereAthanAtDb = athanViewMoldel.isThereSavedAthanDates.collectAsState()
+            val currentLocale = localeViewModel.savedLocale.collectAsState()
 
+
+            val updateDirection = remember {
+                derivedStateOf {
+                    if (currentLocale.value?.name == "ar") {
+                        LayoutDirection.Rtl
+
+                    } else {
+                        LayoutDirection.Ltr
+                    }
+                }
+            }
 
             val requestLocationPermission = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -149,7 +188,6 @@ class MainActivity : ComponentActivity() {
 
 
 
-
             LaunchedEffect(Unit) {
                 if (isAlreadyHasSavedLocation.value == false) {
                     val permissionList =
@@ -181,19 +219,30 @@ class MainActivity : ComponentActivity() {
 
 
 
+
+
+
             AthanTheme {
-                val navController = rememberNavController()
-                Scaffold(
-                    containerColor = Color.White,
-                    bottomBar = {
-                        ApplicationButtonNavy(navController)
+                CompositionLocalProvider(
+                    LocalLayoutDirection provides updateDirection.value
+                ) {
+                    Scaffold(
+                        containerColor = Color.White,
+                        bottomBar = {
+                            ApplicationButtonNavy(navController)
+                        }
+                    ) { innerPadding ->
+                        innerPadding.calculateTopPadding()
+                        innerPadding.calculateBottomPadding()
+
+                        Navigation(
+                            navController,
+                            athanViewMoldel,
+                            localeViewModel,
+                            connectivityViewModel
+                        )
+
                     }
-                ) { innerPadding ->
-                    innerPadding.calculateTopPadding()
-                    innerPadding.calculateBottomPadding()
-
-                    Navigation(navController, athanViewMoldel)
-
                 }
 
             }
@@ -219,16 +268,16 @@ fun ApplicationButtonNavy(nav: NavHostController) {
 
     val buttonNavItemHolder = listOf(
         ButtonNavItem(
-            name = "Home",
+            name = R.string.home,
             imageId = Icons.Outlined.Home,
 
             ),
         ButtonNavItem(
-            name = "Qeblah",
+            name =R.string.qeblah,
             imageId = ImageVector.vectorResource(R.drawable.compass)
         ),
         ButtonNavItem(
-            name = "Setting",
+            name = R.string.setting,
             imageId = Icons.Outlined.Settings,
 
             ),
@@ -270,7 +319,7 @@ fun ApplicationButtonNavy(nav: NavHostController) {
                         },
                         label = {
                             Text(
-                                text = value.name,
+                                text =stringResource(value.name),
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.Center

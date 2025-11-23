@@ -68,10 +68,15 @@ object Model {
 
     @Singleton
     @Provides
-    fun alermSetting(@ApplicationContext context: Context): AlarmManager {
+    fun alarmSetting(@ApplicationContext context: Context): AlarmManager {
         return context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
+    @Provides
+    @Singleton
+    fun appScope(): CoroutineScope{
+        return CoroutineScope(Dispatchers.Default+SupervisorJob())
+    }
     @Provides
     @Singleton
     fun athanDB(context: Context): AthanDataBase {
@@ -96,14 +101,12 @@ object Model {
     @Singleton
     fun locationDao(athanDataBase: AthanDataBase) = athanDataBase.locationDao()
 
-
-    @Provides
-    @Singleton
-    fun applicationScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob()+ Dispatchers.Default)
-    }
-
     @Provides
     @Singleton
     fun athanDao(athanDataBase: AthanDataBase) = athanDataBase.athanDao()
+
+    @Provides
+    @Singleton
+    fun localeDao(athanDataBase: AthanDataBase) =   athanDataBase.languageDao()
+
 }

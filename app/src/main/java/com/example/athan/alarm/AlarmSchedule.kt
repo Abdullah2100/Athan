@@ -9,9 +9,12 @@ import com.example.athan.Broadcast.AlarmBroadCast
 import com.example.athan.data.local.entity.Time
 import com.example.athan.data.repository.AthanRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.datetime.LocalDateTime
 import java.util.Calendar
 import javax.inject.Inject
-
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 class AlarmSchedule @Inject constructor(
     @ApplicationContext val context: Context,
     private val alarmManager: AlarmManager,
@@ -24,6 +27,7 @@ class AlarmSchedule @Inject constructor(
 
     @SuppressLint("ScheduleExactAlarm")
    suspend  fun scheduleNextAthan(nextAthanTime: Time) {
+       val currentHour = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val calender = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, nextAthanTime.hour)
             set(Calendar.MINUTE, nextAthanTime.minute)
@@ -32,7 +36,7 @@ class AlarmSchedule @Inject constructor(
 
             set(Calendar.MILLISECOND, 0)
 
-            if (nextAthanTime.name == "فجر" && get(Calendar.HOUR_OF_DAY) > 18) {
+            if (nextAthanTime.name == "Fajr" && currentHour.hour > 18) {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
         }
@@ -49,12 +53,12 @@ class AlarmSchedule @Inject constructor(
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            calender.timeInMillis,
-            pending
-        )
+      
 
+       alarmManager.setAlarmClock(
+           AlarmManager.AlarmClockInfo(calender.timeInMillis, null),
+           pending
+        )
 
     }
 

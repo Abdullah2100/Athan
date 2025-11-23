@@ -9,23 +9,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 
-class ConnectivityInterNetUtil @Inject constructor(@ApplicationContext private  val context: Context){
+class ConnectivityInterNetUtil @Inject constructor(@ApplicationContext private val context: Context) {
 
     val isConnectToInternet = MutableStateFlow<Boolean>(false)
-private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE)as ConnectivityManager
+    private val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     init {
-      connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
-          override fun onAvailable(network: Network) {
-              isConnectToInternet.value=true
-              super.onAvailable(network)
-          }
+        connectivityManager.registerDefaultNetworkCallback(object :
+            ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                isConnectToInternet.value = true
+                super.onAvailable(network)
+            }
 
-          override fun onLost(network: Network) {
-              isConnectToInternet.value=false
-              super.onLost(network)
-          }
-      })
+            override fun onLost(network: Network) {
+                isConnectToInternet.value = false
+                super.onLost(network)
+            }
+        })
     }
 
 

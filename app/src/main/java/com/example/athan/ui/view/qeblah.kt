@@ -17,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.athan.R
 import com.hassanjamil.hqibla.QiblaCompass
 import com.hassanjamil.hqibla.hasLocationPermission
 import com.hassanjamil.hqibla.rememberCompassAzimuth
@@ -55,7 +57,7 @@ fun Qeblah() {
             containerColor = Color.White,
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Qeblah") },
+                    title = { Text(stringResource(R.string.qeblah)) },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.White
                     )

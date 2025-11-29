@@ -2,7 +2,6 @@ package com.example.athan
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +13,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +33,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -74,7 +71,7 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val athanViewMoldel: AthanViewModel by viewModels()
+    private val athanViewModel: AthanViewModel by viewModels()
     private val localeViewModel: LocaleViewModel by viewModels()
     private val connectivityViewModel: ConnectivityViewModel by viewModels()
 
@@ -115,8 +112,8 @@ class MainActivity : ComponentActivity() {
 
             val locationClient = LocationServices.getFusedLocationProviderClient(this)
 
-            val isAlreadyHasSavedLocation = athanViewMoldel.isSavedUserLocation.collectAsState()
-            val isThereAthanAtDb = athanViewMoldel.isThereSavedAthanDates.collectAsState()
+            val isAlreadyHasSavedLocation = athanViewModel.isSavedUserLocation.collectAsState()
+            val isThereAthanAtDb = athanViewModel.isThereSavedAthanDates.collectAsState()
             val currentLocale = localeViewModel.savedLocale.collectAsState()
 
 
@@ -154,15 +151,15 @@ class MainActivity : ComponentActivity() {
                             addOnSuccessListener { location ->
                                 if (location != null) {
                                     if (isThereAthanAtDb.value == null || isThereAthanAtDb.value == false)
-                                        athanViewMoldel.getAthanDates(
+                                        athanViewModel.getAthanDates(
                                             location.latitude,
                                             location.longitude
-                                        );
+                                        )
 
-                                    athanViewMoldel.saveUserLocationToDB(
+                                    athanViewModel.saveUserLocationToDB(
                                         location.latitude,
                                         location.longitude
-                                    );
+                                    )
 
                                 }
                             }
@@ -176,7 +173,7 @@ class MainActivity : ComponentActivity() {
                         }
 
 
-                        // Got last known location. In some srare situations this can be null.
+                        // Got last known location. In some  situations this can be null.
                     } else {
                         Toast.makeText(
                             this,
@@ -212,7 +209,7 @@ class MainActivity : ComponentActivity() {
 
                     requestLocationPermission.launch(permissionList)
                 } else {
-                    athanViewMoldel.getAthanDates();
+                    athanViewModel.getAthanDates()
                 }
             }
 
@@ -237,7 +234,7 @@ class MainActivity : ComponentActivity() {
 
                         Navigation(
                             navController,
-                            athanViewMoldel,
+                            athanViewModel,
                             localeViewModel,
                             connectivityViewModel
                         )

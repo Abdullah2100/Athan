@@ -42,7 +42,7 @@ class LocaleViewModel @Inject constructor(
         localeRepository.saveLanguage(locale)
     }
 
-    fun setDefaultLocale(locale:String){
+    fun setDefaultLocale(locale: String) {
         appScope.launch {
             localeRepository.setDefaultLocale(locale)
         }
@@ -53,25 +53,25 @@ class LocaleViewModel @Inject constructor(
         appScope.launch(Dispatchers.IO) { updateLocale(locale) }
 
         val context = currentContext.value ?: return
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            // Android 13+: Use the native LocaleManager API
+//            // This is the official Android API for per-app language preferences
+//            context.getSystemService(LocaleManager::class.java).applicationLocales =
+//                LocaleList.forLanguageTags(locale)
+//        } else {
+        // Android 24-32: Use manual configuration update
+        // Note: AppCompatDelegate.setApplicationLocales() doesn't work with ComponentActivity
+        // It only works with AppCompatActivity, so we use the manual approach
+        val newLocale = Locale(locale)
+        Locale.setDefault(newLocale)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+: Use the native LocaleManager API
-            // This is the official Android API for per-app language preferences
-            context.getSystemService(LocaleManager::class.java).applicationLocales =
-                LocaleList.forLanguageTags(locale)
-        } else {
-            // Android 24-32: Use manual configuration update
-            // Note: AppCompatDelegate.setApplicationLocales() doesn't work with ComponentActivity
-            // It only works with AppCompatActivity, so we use the manual approach
-            val newLocale = Locale(locale)
-            Locale.setDefault(newLocale)
-            
-            val configuration: Configuration = context.resources.configuration
-            configuration.setLocale(newLocale)
-            configuration.setLayoutDirection(newLocale)
-            
-            context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
-        }
+        val configuration: Configuration = context.resources.configuration
+        configuration.setLocale(newLocale)
+        configuration.setLayoutDirection(newLocale)
+
+        context.resources.updateConfiguration(configuration, context.resources.displayMetrics)
+//        }
     }
 
 }
